@@ -1,4 +1,277 @@
 <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ada Sesuatu Buat Kamu</title>
+    <!-- Import Font Estetik -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-glow: #ff3366;
+            --bg-color: #050510;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100vh;
+            background: radial-gradient(circle at center, #1a0b2e 0%, var(--bg-color) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        /* Animasi Bintang di Background */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background: transparent url('https://cdn.pixabay.com/photo/2016/01/27/15/25/space-1164579_960_720.png') repeat top center;
+            animation: move-twink-back 200s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes move-twink-back {
+            from {background-position: 0 0;}
+            to {background-position: -10000px 5000px;}
+        }
+
+        /* Glassmorphism Card Container */
+        .glass-card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .glass-card.expanded {
+            padding: 50px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 50px rgba(255, 51, 102, 0.15);
+        }
+
+        /* SVG Heart Button dengan Neon Glow */
+        .heart-svg {
+            width: 80px;
+            height: 80px;
+            fill: none;
+            stroke: var(--primary-glow);
+            stroke-width: 2;
+            cursor: pointer;
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+            animation: heartbeat 1.5s ease-in-out infinite;
+            transition: all 0.3s ease;
+        }
+
+        .heart-svg:hover {
+            fill: var(--primary-glow);
+            filter: drop-shadow(0 0 25px var(--primary-glow));
+            transform: scale(1.1);
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        .instruction {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            transition: opacity 0.5s ease;
+        }
+
+        /* Styling Teks Pesan */
+        #message-container {
+            display: none;
+            text-align: center;
+            width: 100%;
+        }
+
+        .greeting {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--primary-glow);
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 51, 102, 0.4);
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInDown 1s forwards 0.5s;
+        }
+
+        .typed-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #e0e0e0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        @keyframes fadeInDown {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Partikel yang lebih smooth */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, #fff, var(--primary-glow));
+            box-shadow: 0 0 10px var(--primary-glow);
+            animation: floatAway 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes floatAway {
+            0% { transform: scale(1) translate(0, 0); opacity: 1; }
+            100% { transform: scale(0) translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <!-- Ganti nama 'lagu-romantis.mp3' dengan nama file lagu yang lu punya -->
+    <audio id="bgMusic" loop>
+        <source src="lagu-romantis.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="glass-card" id="card">
+        
+        <svg id="startBtn" class="heart-svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+        <p id="instruction" class="instruction">(Coba Klik Ka)</p>
+
+        <div id="message-container">
+            <div class="greeting">Today...</div>
+            <div id="message" class="typed-text"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const instruction = document.getElementById('instruction');
+        const messageContainer = document.getElementById('message-container');
+        const messageDiv = document.getElementById('message');
+        const card = document.getElementById('card');
+        const bgMusic = document.getElementById('bgMusic');
+        
+        // Teks asli lu terpasang di sini
+        const ungkapanHati = "Aku tau bukan orang yang paling jago merangkai kata. Terkadang diam bukan karena nggak peduli, tapi karena bingung gimana cara nyampeinnya. Tapi lewat layar ini mau bilang: Perasaan itu nyata udah dari lama, lebih hidup dari sekadar teks biasa. Terima kasih udah ada sampe hari ini, teruslah berkembang ka jangn sampe patah semangat.";
+        
+        let i = 0;
+        let isTyping = false;
+
+        function typeWriter() {
+            if (i < ungkapanHati.length) {
+                messageDiv.innerHTML += ungkapanHati.charAt(i);
+                i++;
+                // Randomize typing speed for realistic effect
+                let typingSpeed = Math.random() * (120 - 50) + 50; 
+                setTimeout(typeWriter, typingSpeed); 
+            }
+        }
+
+        function createMagicParticles(x, y) {
+            for (let j = 0; j < 40; j++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 6 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 200 + 50;
+                particle.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                particle.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 1500);
+            }
+        }
+
+        startBtn.addEventListener('click', (e) => {
+            if (isTyping) return;
+            isTyping = true;
+            
+            // Putar lagu
+            bgMusic.play().catch(err => console.log("Audio info:", err));
+            
+            // Efek partikel
+            const rect = startBtn.getBoundingClientRect();
+            createMagicParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+            // Transisi UI Front-end yang smooth
+            startBtn.classList.add('fade-out');
+            instruction.classList.add('fade-out');
+            
+            setTimeout(() => {
+                startBtn.style.display = 'none';
+                instruction.style.display = 'none';
+                card.classList.add('expanded');
+                messageContainer.style.display = 'block';
+                
+                // Mulai ngetik setelah kartu membesar
+                setTimeout(typeWriter, 1200);
+            }, 500); // Nunggu fade out selesai
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,20 +279,20 @@
     <link rel="stylesheet" href="CSS/style.css" />
     <title>Beranda</title>
     <!-- Feather Icons -->
-    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- <script src="https://unpkg.com/feather-icons"></script> -->
 
     <!-- font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@1,300..900&display=swap"
       rel="stylesheet"
-    />
+    /> -->
     <!-- font -->
-  </head>
-  <body>
+  <!-- </head>
+  <body> -->
     <!-- Navbar start -->
-    <nav class="navbar">
+    <!-- <nav class="navbar">
       <a href="#" class="navbar-logo">Kenangan<span>Senja</span></a>
 
       <div class="navbar-nav">
@@ -34,18 +307,18 @@
         <a href="#" id="search-button"> <i data-feather="search"></i></a>
         <a href="#" id="shopping-cart-button">
           <i data-feather="shopping-cart"></i
-        ></a>
-        <a href="#" id="hamburger-menu"> <i data-feather="menu"></i></a>
-      </div>
+        ></a> -->
+        <!-- <a href="#" id="hamburger-menu"> <i data-feather="menu"></i></a>
+      </div> -->
       <!-- Search Form Start -->
-      <div class="search-form">
+      <!-- <div class="search-form">
         <input type="search" id="search-box" placeholder="search here..." />
         <label for="search-box"><i data-feather="search"></i></label>
-      </div>
+      </div> -->
       <!-- Search Form End -->
 
       <!-- Shopping Cart Star -->
-      <div class="shopping-cart">
+      <!-- <div class="shopping-cart">
         <div class="cart-item">
           <img src="img/products/1.jpg" alt="Product 1" />
           <div class="item-detail">
@@ -53,6 +326,14 @@
             <div class="item-price">IDR 30K</div>
           </div>
           <i data-feather="trash-2" class="remove-item"></i>
+        </div>
+        <div class="cart-item">
+          <img src="img/products/1.jpg" alt="Product 1" />
+          <div class="item-detail">
+            <h3>Product 1</h3>
+            <div class="item-price">IDR 30K</div>
+          </div> -->
+          <!-- <i data-feather="trash-2" class="remove-item"></i>
         </div>
         <div class="cart-item">
           <img src="img/products/1.jpg" alt="Product 1" />
@@ -70,21 +351,13 @@
           </div>
           <i data-feather="trash-2" class="remove-item"></i>
         </div>
-        <div class="cart-item">
-          <img src="img/products/1.jpg" alt="Product 1" />
-          <div class="item-detail">
-            <h3>Product 1</h3>
-            <div class="item-price">IDR 30K</div>
-          </div>
-          <i data-feather="trash-2" class="remove-item"></i>
-        </div>
-      </div>
+      </div> -->
       <!-- Shopping Cart End -->
-    </nav>
+    <!-- </nav> -->
     <!-- Navbar end -->
 
     <!-- Hero Section start -->
-    <section class="hero" id="home">
+    <!-- <section class="hero" id="home">
       <main class="content">
         <h1>Mari Nikmati Secangkir <span>Kopi</span></h1>
         <p>
@@ -93,10 +366,10 @@
         </p>
         <a href="#" class="cta">Beli Sekarang</a>
       </main>
-    </section>
+    </section> -->
 
     <!-- About Section Star -->
-    <section id="about" class="about">
+    <!-- <section id="about" class="about">
       <h2><span>Tentang</span> Kami</h2>
 
       <div class="row">
@@ -105,8 +378,8 @@
         </div>
         <div class="content">
           <h3>Kenapa Memilih Kopi Kami</h3>
-          <p>
-            Karena kami percaya kopi terbaik lahir dari proses yang jujur,
+          <p> -->
+            <!-- Karena kami percaya kopi terbaik lahir dari proses yang jujur,
             diracik dengan hati, dan disajikan untuk dinikmati sepenuh jiwa.
           </p>
           <p>
@@ -115,11 +388,11 @@
           </p>
         </div>
       </div>
-    </section>
+    </section> -->
     <!-- About Section End -->
 
     <!-- Menu Section Start -->
-    <section id="menu" class="menu">
+    <!-- <section id="menu" class="menu">
       <h2><span>Menu</span> Kami</h2>
       <p>
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores, atque
@@ -129,8 +402,8 @@
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Incidunt,
         saepe minus. Repudiandae maiores a fuga magnam praesentium placeat in
         similique!
-      </p>
-      <div class="row">
+      </p> -->
+      <!-- <div class="row">
         <div class="menu-card">
           <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img" />
           <h3 class="menu-card-tittle">- Espresso</h3>
@@ -146,8 +419,8 @@
           <h3 class="menu-card-tittle">- Espresso</h3>
           <p class="menu-card-price">IDR 15K</p>
         </div>
-        <div class="menu-card">
-          <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img" />
+        <div class="menu-card"> -->
+          <!-- <img src="img/menu/1.jpg" alt="Espresso" class="menu-card-img" />
           <h3 class="menu-card-tittle">- Espresso</h3>
           <p class="menu-card-price">IDR 15K</p>
         </div>
@@ -162,11 +435,11 @@
           <p class="menu-card-price">IDR 15K</p>
         </div>
       </div>
-    </section>
+    </section> -->
     <!-- Menu Section End -->
 
     <!-- Products Section Start -->
-    <section class="products" id="products">
+    <!-- <section class="products" id="products">
       <h2><span>Produk Unggulan</span> Kami</h2>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
       <div class="row">
@@ -186,8 +459,28 @@
               <i data-feather="star" class="star-full"></i>
               <i data-feather="star" class="star-full"></i>
               <i data-feather="star" class="star-full"></i>
-            </div>
-            <div class="product-price">IDR 30K</div>
+            </div> -->
+            <!-- <div class="product-price">IDR 30K</div>
+          </div>
+        </div>
+        <div class="product-card">
+          <div class="product-icons">
+            <a href="#"><i data-feather="shopping-cart"></i></a>
+            <a href="#" class="item-detail-button"><i data-feather="eye"></i></a>
+          </div> -->
+          <!-- <div class="product-image">
+            <img src="img/products/1.jpg" alt="Product 1" />
+          </div>
+          <div class="product-content">
+            <h3>Cofee Beans 1</h3>
+            <div class="product-stars">
+              <i data-feather="star"></i>
+              <i data-feather="star"></i>
+              <i data-feather="star"></i>
+              <i data-feather="star"></i>
+              <i data-feather="star"></i>
+            </div> -->
+            <!-- <div class="product-price">IDR 30K</div>
           </div>
         </div>
         <div class="product-card">
@@ -197,8 +490,8 @@
           </div>
           <div class="product-image">
             <img src="img/products/1.jpg" alt="Product 1" />
-          </div>
-          <div class="product-content">
+          </div> -->
+          <!-- <div class="product-content">
             <h3>Cofee Beans 1</h3>
             <div class="product-stars">
               <i data-feather="star"></i>
@@ -214,8 +507,8 @@
           <div class="product-icons">
             <a href="#"><i data-feather="shopping-cart"></i></a>
             <a href="#" class="item-detail-button"><i data-feather="eye"></i></a>
-          </div>
-          <div class="product-image">
+          </div> -->
+          <!-- <div class="product-image">
             <img src="img/products/1.jpg" alt="Product 1" />
           </div>
           <div class="product-content">
@@ -226,52 +519,32 @@
               <i data-feather="star"></i>
               <i data-feather="star"></i>
               <i data-feather="star"></i>
-            </div>
-            <div class="product-price">IDR 30K</div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="product-icons">
-            <a href="#"><i data-feather="shopping-cart"></i></a>
-            <a href="#" class="item-detail-button"><i data-feather="eye"></i></a>
-          </div>
-          <div class="product-image">
-            <img src="img/products/1.jpg" alt="Product 1" />
-          </div>
-          <div class="product-content">
-            <h3>Cofee Beans 1</h3>
-            <div class="product-stars">
-              <i data-feather="star"></i>
-              <i data-feather="star"></i>
-              <i data-feather="star"></i>
-              <i data-feather="star"></i>
-              <i data-feather="star"></i>
-            </div>
-            <div class="product-price">IDR 30K</div>
+            </div> -->
+            <!-- <div class="product-price">IDR 30K</div>
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     <!-- Products Section End -->
 
     <!-- Contact Section Start -->
-    <section id="contact" class="contact">
+    <!-- <section id="contact" class="contact">
       <h2><span>Kontak</span> Kami</h2>
       <p>
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores, atque
         quam neque nesciunt laboriosam officia autem consectetur est a libero.
-      </p>
+      </p> -->
 
-      <div class="row">
+      <!-- <div class="row">
         <iframe
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d55275.57651779662!2d111.44520000967823!3d0.06113131757867834!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31fe21ee2137398b%3A0xc286226380569472!2sSintang%2C%20Kec.%20Sintang%2C%20Kabupaten%20Sintang%2C%20Kalimantan%20Barat!5e1!3m2!1sid!2sid!4v1766980909725!5m2!1sid!2sid"
           allowfullscreen=""
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           class="map"
-        ></iframe>
+        ></iframe> -->
 
-        <form action="">
+        <!-- <form action="">
           <div class="input-grup">
             <i data-feather="user"></i>
             <input type="text" placeholder="nama" />
@@ -287,11 +560,11 @@
           <button type="submit" class="btn">Kirim Pesan</button>
         </form>
       </div>
-    </section>
+    </section> -->
     <!-- Contact Section End -->
 
     <!-- Footer Start -->
-    <footer>
+    <!-- <footer>
       <div class="social">
         <a href="#"><i data-feather="instagram"></i></a>
         <a href="#"><i data-feather="twitter"></i></a>
@@ -303,16 +576,16 @@
         <a href="#menu">Menu</a>
         <a href="#contact">Kontak</a>
         <a href="#about">Tentang Kami</a>
-      </div>
+      </div> -->
 
-      <div class="credit">
+      <!-- <div class="credit">
         <p>Created by <a href="">Ardhi Septian Al Qohar</a> | &copy; 2025.</p>
       </div>
-    </footer>
+    </footer> -->
     <!-- Footer End -->
 
     <!-- Modal Box Item Detail Start -->
-    <div class="modal" id="item-detail-modal">
+    <!-- <div class="modal" id="item-detail-modal">
       <div class="modal-container">
         <a href="#" class="close-icon"><i data-feather="x"></i></a>
         <div class="modal-content">
@@ -323,8 +596,8 @@
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque
               quis placeat sint ab doloremque nulla facilis repellendus, ratione
               iusto beatae.
-            </p>
-              <div class="product-stars">
+            </p> -->
+              <!-- <div class="product-stars">
               <i data-feather="star"></i>
               <i data-feather="star"></i>
               <i data-feather="star"></i>
@@ -336,16 +609,16 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- Modal Box Item Detail End -->
 
     <!-- Feather Icons -->
-    <script>
+    <!-- <script>
       feather.replace();
     </script>
-    <!-- Feather Icons -->
+    <!-- Feather Icons --> -->
 
     <!-- My Javascript -->
     <script src="js/script.js"></script>
   </body>
-</html>
+</html> -->
